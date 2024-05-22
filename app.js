@@ -25,12 +25,16 @@ const db = new sqlite3.Database('db/sqlite.db', (err) => {
     console.log('Connected to the SQlite database.');
 });
 
-app.get('/api/quotes', (req, res) => {
-    db.all('SELECT * FROM movie_quotes', (err, rows) => {
+app.get('/api', (req, res) => {
+    let provider = req.query.provider;
+    let sql = 'SELECT * FROM movie_quotes WHERE provider = ?';
+    db.all(sql, [provider], (err, rows) => {
         if (err) {
             console.error(err.message);
+            res.status(500).send('Internal Server Error');
+            return;
         }
-        res.json(rows);
+        res.send(rows);
     });
 });
 
